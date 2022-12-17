@@ -1,6 +1,6 @@
 # Nameless
 
-This addon hides the player's floating nameplate in Final Fantasy XI. This may be impacted by other addons that also alter the name plate due to invisible triggers.
+This FFXI Windower v4 addon hides the player's floating nameplate in Final Fantasy XI. This may be impacted by other addons that also alter the name plate due to invisible triggers.
 
 Thanks to: 
 https://github.com/AkadenTK for letting me know they were already working on something that could hide name plates.
