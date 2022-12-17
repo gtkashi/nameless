@@ -9,4 +9,4 @@ https://github.com/AkadenTK for letting me know they were already working on som
 
 This is a very basic script that simply hides the player's name plate. There are no associated commands. Unload the addon and zone or interact with an NPC if you want your name to appear again.
 
-Your name will still appear when interacting with any NPC, and briefly after you have changed zones.
+Your name will still appear when interacting with some NPCs, and briefly after you have changed zones.
