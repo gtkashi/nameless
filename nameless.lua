@@ -1,5 +1,5 @@
 _addon.name = 'nameless'
-_addon.version = '0.1.1'
+_addon.version = '0.1.2'
 _addon.author = 'GTKashi, distilled from revisible 0.9.2 by Darkdoom;Rubenator;Akaden'
 
 local self_invisible_flag = 0x8
