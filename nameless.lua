@@ -23,15 +23,17 @@ local debug = function(message, ...)
 end
 
 -- Hides nameplate
-local hideplayername = function(index)
-	_FlagChanger.HideEntityName(index)
+local hideplayername = function()
+	playerindex = windower.ffxi.get_player().index
+	_FlagChanger.HideEntityName(playerindex)
 end
 
 -- Adds a small delay to reset character/nameplate visibility and hide the nameplate again
-local rehideplayername = function(index)
-	_FlagChanger.ShowEntityName(index)
+local rehideplayername = function()
+	playerindex = windower.ffxi.get_player().index
+	_FlagChanger.ShowEntityName(playerindex)
 	coroutine.sleep(0.1)
-	hideplayername(index)
+	hideplayername()
 end
 
 -- Hides nameplate on addon load
@@ -49,30 +51,27 @@ end)
 
 -- Reset player visibility when Invisible buff is lost
 windower.register_event('outgoing chunk',function(id, buff_id)
-	playerindex = windower.ffxi.get_player().index
 	if id == 0x0F1 then
 		if buff_id == 69 then
-			rehideplayername(playerindex)
+			rehideplayername()
 		end
 	end
 end)
 
 -- Backup attempt to reset character visibility after losing Invisible
 windower.register_event('lose buff', function(buff_id)
-	playerindex = windower.ffxi.get_player().index
 	--debug(tostring(buff_id))
 	if buff_id == 69 then
-		rehideplayername(playerindex)
+		rehideplayername()
 	end
 end)
 
 -- Attempting to solve for an odd case where Sneak cast afterwards seemed to cause the player to be invisible
 windower.register_event('gain buff', function(buff_id)
-	playerindex = windower.ffxi.get_player().index
 	--debug(tostring(buff_id))
 	if buff_id == 71 then
 		if not T(windower.ffxi.get_player().buffs):contains(69) then
-			rehideplayername(playerindex)
+			rehideplayername()
 		end
 	end
 end)
