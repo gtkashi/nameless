@@ -16,40 +16,68 @@ local path = windower.addon_path:gsub('\\', '/') .. 'EntityFlagChanger.dll'
 local _FlagChanger = assert(package.loadlib(path, 'luaopen_EntityFlagChanger'))()
 local settings = config.load(defaults)
 
-local hideplayername = function()
-	playerindex = windower.ffxi.get_player().index
-	_FlagChanger.HideEntityName(playerindex)
-end
-
 local debug = function(message, ...)
 	if settings.debug then
 		print('Nameless >> '..string.format(message, ...))
 	end
 end
 
+-- Hides nameplate
+local hideplayername = function(index)
+	_FlagChanger.HideEntityName(index)
+end
+
+-- Adds a small delay to reset character/nameplate visibility and hide the nameplate again
+local rehideplayername = function(index)
+	_FlagChanger.ShowEntityName(index)
+	coroutine.sleep(0.1)
+	hideplayername(index)
+end
+
+-- Hides nameplate on addon load
 windower.register_event('load', function()
 	playerindex = windower.ffxi.get_player().index
-	_FlagChanger.ShowEntityName(playerindex)
-	coroutine.sleep(0.1)
-	hideplayername()
+	rehideplayername(playerindex)
 end)
 
+-- Hides nameplate after main inventory load complete
 windower.register_event('incoming chunk',function(id, original, modified, injected, blocked)
 	if id == 0x001D then
 		hideplayername()
 	end
 end)
 
+-- Reset player visibility when Invisible buff is lost
+windower.register_event('outgoing chunk',function(id, buff_id)
+	playerindex = windower.ffxi.get_player().index
+	if id == 0x0F1 then
+		if buff_id == 69 then
+			rehideplayername(playerindex)
+		end
+	end
+end)
+
+-- Backup attempt to reset character visibility after losing Invisible
 windower.register_event('lose buff', function(buff_id)
 	playerindex = windower.ffxi.get_player().index
 	--debug(tostring(buff_id))
 	if buff_id == 69 then
-		_FlagChanger.ShowEntityName(playerindex)
-		coroutine.sleep(0.1)
-		_FlagChanger.HideEntityName(playerindex)
+		rehideplayername(playerindex)
 	end
 end)
 
+-- Attempting to solve for an odd case where Sneak cast afterwards seemed to cause the player to be invisible
+windower.register_event('gain buff', function(buff_id)
+	playerindex = windower.ffxi.get_player().index
+	--debug(tostring(buff_id))
+	if buff_id == 71 then
+		if not T(windower.ffxi.get_player().buffs):contains(69) then
+			rehideplayername(playerindex)
+		end
+	end
+end)
+
+-- Make the nameplate/character visible again right before unloading, else you'd need to talk to an NPC or zone to reset yourself
 windower.register_event('unload', function()
 	playerindex = windower.ffxi.get_player().index
 	_FlagChanger.ShowEntityName(playerindex)
