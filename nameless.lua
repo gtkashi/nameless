@@ -64,6 +64,9 @@ windower.register_event('lose buff', function(buff_id)
 	if buff_id == 69 then
 		rehideplayername()
 	end
+	if not T(windower.ffxi.get_player().buffs):contains(69) then
+		rehideplayername()
+	end
 end)
 
 -- Attempting to solve for an odd case where Sneak cast afterwards seemed to cause the player to be invisible
