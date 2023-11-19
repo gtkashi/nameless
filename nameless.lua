@@ -61,10 +61,19 @@ windower.register_event('load', function()
 	end
 end)
 
+local wait = function(seconds)
+	local start = os.time()
+	repeat until os.time() > start + seconds
+  end
+
 -- Runs invisible check before every tick
 windower.register_event('prerender', function()
 	if checkactive == 1 then
-		checkinvisstatus()
+		if not pcall(checkinvisstatus) then
+			debug("calling invisibility status failed: probably while starting or stopping the game")
+			debug("waiting a moment before re-checking")
+			wait(1)
+		end
 	end
 end)
 
