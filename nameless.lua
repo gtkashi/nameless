@@ -51,28 +51,27 @@ windower.register_event('unload', function()
 	_FlagChanger.ShowEntityName(windower.ffxi.get_player().index)
 end)
 
--- Checks for invisible status on load/reload
-windower.register_event('load', function()
+local checkinvisstatusonload = function()
 	if T(windower.ffxi.get_player().buffs):contains(69) then
 		debug("player invisible on load")
 	else
 		rehideplayername()
 		debug("player visible on load")
 	end
-end)
+end
 
-local wait = function(seconds)
-	local start = os.time()
-	repeat until os.time() > start + seconds
-  end
+-- Checks for invisible status on load/reload
+windower.register_event('load', function()
+	if not pcall(checkinvisstatusonload) then
+		debug("calling invisibility status failed: probably while starting or stopping the game")
+	end
+end)
 
 -- Runs invisible check before every tick
 windower.register_event('prerender', function()
 	if checkactive == 1 then
 		if not pcall(checkinvisstatus) then
 			debug("calling invisibility status failed: probably while starting or stopping the game")
-			debug("waiting a moment before re-checking")
-			wait(1)
 		end
 	end
 end)
